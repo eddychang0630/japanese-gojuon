@@ -11,6 +11,7 @@
   <title>🌸 日文五十音學習</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script src="strokes.js"></script>
   <style>
     :root {
       --primary: #e63946;
@@ -357,6 +358,273 @@
     .ap-select option {
       background: #1d3557;
       color: white;
+    }
+
+    /* Autoplay countdown progress bar */
+    .ap-progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .ap-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+
+    /* Table View Toggle */
+    .table-view-toggle {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 12px;
+      gap: 4px;
+    }
+    .tv-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .tv-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Row Carousel View */
+    .row-pills-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .row-pills-bar::-webkit-scrollbar { display: none; }
+    .row-pill {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 16px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .row-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(230,57,70,0.3);
+    }
+    .row-swipe-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 16px;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
+      position: relative;
+      cursor: grab;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .row-swipe-card:active {
+      cursor: grabbing;
+    }
+    .row-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .row-card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .row-chars-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .row-char-item {
+      background: #f8fafc;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      padding: 12px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .row-char-item:active { transform: scale(0.95); }
+    .row-char-item:hover { border-color: var(--primary-light); background: #fff5f5; }
+    .rci-main {
+      font-size: 2.2rem;
+      font-family: var(--font-jp);
+      color: var(--text);
+      line-height: 1.1;
+      display: block;
+    }
+    .rci-roma {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-top: 4px;
+      display: block;
+    }
+    .rci-sub {
+      font-size: 0.7rem;
+      color: var(--secondary);
+      margin-top: 2px;
+      display: block;
+      font-family: var(--font-jp);
+    }
+    .rci-stroke-badge {
+      font-size: 0.6rem;
+      color: #94a3b8;
+      margin-top: 3px;
+      display: block;
+    }
+    .row-char-item.learned {
+      border-color: var(--success);
+      background: #f0fff4;
+    }
+    .row-char-item.reading-now {
+      border-color: var(--primary) !important;
+      background: #ffe3e5 !important;
+      transform: scale(1.08) !important;
+      box-shadow: 0 0 18px rgba(230, 57, 70, 0.45) !important;
+      z-index: 5;
+    }
+    .row-card-play-all {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .row-card-play-all:active { transform: scale(0.95); }
+
+    /* Modal Navigation & Stroke Canvas */
+    .modal-nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .modal-nav-arrow {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-nav-arrow:active { transform: scale(0.92); }
+    .modal-char-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-char-text {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-family: var(--font-jp);
+      color: var(--text);
+    }
+    .modal-roma-badge {
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+    .stroke-box-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .stroke-canvas-wrap {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: inset 0 0 0 1px #e2e8f0;
+      margin-bottom: 10px;
+      overflow: hidden;
+      touch-action: none;
+    }
+    .stroke-canvas-wrap svg,
+    .stroke-canvas-wrap canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .stroke-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .stroke-action-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .stroke-action-btn:active { transform: scale(0.95); }
+    .stroke-action-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .stroke-count-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
     }
 
     /* ===== DETAIL MODAL ===== */
@@ -960,24 +1228,55 @@
     <div class="ap-info">
       <div class="ap-title">🎧 全五十音循序朗讀</div>
       <div class="ap-current" id="apCurrentLabel">從「あ」開始自動連播到「ん」</div>
+      <div class="ap-progress-bar"><div class="ap-progress-fill" id="apProgressFill"></div></div>
     </div>
     <div class="ap-controls">
       <button class="ap-btn primary" id="apPlayBtn" onclick="toggleAutoPlay()">▶ 全部連播</button>
       <button class="ap-btn" id="apStopBtn" onclick="stopAutoPlay()" style="display:none;">⏹ 停止</button>
       <select id="apSpeed" class="ap-select" onchange="changeAutoSpeed()">
-        <option value="1200">較快 (1.2s)</option>
-        <option value="1700" selected>標準 (1.7s)</option>
-        <option value="2300">慢速 (2.3s)</option>
+        <option value="1200">極速 (1.2s)</option>
+        <option value="1800">標準 (1.8s)</option>
+        <option value="2500">慢速 (2.5s)</option>
+        <option value="3500" selected>悠閒跟讀 (3.5s)</option>
+        <option value="5000">超慢練習 (5.0s)</option>
       </select>
     </div>
   </div>
 
-  <div class="type-toggle">
-    <button class="type-btn active" onclick="switchType('hiragana', this)">平假名 ひらがな</button>
-    <button class="type-btn" onclick="switchType('katakana', this)">片假名 カタカナ</button>
-    <button class="type-btn" onclick="switchType('both', this)">對照</button>
+  <div class="table-view-toggle">
+    <button class="tv-btn active" id="tvModeCarousel" onclick="switchTableView('carousel')">🎴 分行滑動卡片</button>
+    <button class="tv-btn" id="tvModeGrid" onclick="switchTableView('grid')">📑 完整五十音表</button>
   </div>
-  <div id="kanaTable"></div>
+
+  <!-- ROW CAROUSEL VIEW (Swipeable) -->
+  <div id="rowCarouselSection">
+    <div class="row-pills-bar" id="rowPillsBar"></div>
+    <div class="row-swipe-card" id="rowSwipeCard">
+      <div class="row-card-header">
+        <div class="row-card-title" id="rowCardTitle">あ行 (A行)</div>
+        <button class="row-card-play-all" onclick="playCurrentRow()">🔊 朗讀整行</button>
+      </div>
+      <div class="row-chars-grid" id="rowCharsGrid"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <button class="modal-nav-arrow" onclick="prevRow()">◀ 上一行</button>
+        <span style="font-size:0.75rem; color:var(--text-muted);" id="rowCountLabel">1 / 11 行</span>
+        <button class="modal-nav-arrow" onclick="nextRow()">下一行 ▶</button>
+      </div>
+    </div>
+    <div style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:10px;">
+      👈 左右滑動切換行（あ行 ➔ か行...）👉
+    </div>
+  </div>
+
+  <!-- FULL GRID VIEW -->
+  <div id="fullGridSection" style="display:none;">
+    <div class="type-toggle">
+      <button class="type-btn active" onclick="switchType('hiragana', this)">平假名 ひらがな</button>
+      <button class="type-btn" onclick="switchType('katakana', this)">片假名 カタカナ</button>
+      <button class="type-btn" onclick="switchType('both', this)">對照</button>
+    </div>
+    <div id="kanaTable"></div>
+  </div>
 </div>
 
 <!-- FLASHCARD PAGE -->
@@ -1166,10 +1465,51 @@
 <div class="modal-overlay" id="kanaModal" onclick="closeModal(event)">
   <div class="modal" id="modalContent">
     <div class="modal-handle"></div>
-    <div class="modal-kana">
-      <span class="big-char" id="modalChar">あ</span>
-      <div class="roma-label" id="modalRoma">a</div>
-      <div class="pair-char" id="modalPair">片假名：ア</div>
+    <div class="modal-nav-header">
+      <button class="modal-nav-arrow" onclick="modalPrevChar()">◀ 上一字</button>
+      <div class="modal-char-title">
+        <span class="modal-char-text" id="modalChar">あ</span>
+        <span class="modal-roma-badge" id="modalRoma">a</span>
+      </div>
+      <button class="modal-nav-arrow" onclick="modalNextChar()">下一字 ▶</button>
+    </div>
+
+    <!-- STROKE ORDER CANVAS & TRACE PRACTICE -->
+    <div class="stroke-box-container">
+      <div class="stroke-canvas-wrap">
+        <svg id="strokeSvg" viewBox="0 0 109 109">
+          <!-- Rice grid guidelines -->
+          <line x1="0" y1="54.5" x2="109" y2="54.5" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" />
+          <line x1="54.5" y1="0" x2="54.5" y2="109" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" />
+          <line x1="0" y1="0" x2="109" y2="109" stroke="#f8fafc" stroke-width="1" stroke-dasharray="2,3" />
+          <line x1="109" y1="0" x2="0" y2="109" stroke="#f8fafc" stroke-width="1" stroke-dasharray="2,3" />
+          <rect x="0" y="0" width="109" height="109" fill="none" stroke="#e2e8f0" stroke-width="1" rx="8" />
+
+          <!-- Ghost strokes (faint background) -->
+          <g id="strokeGhostGroup" fill="none" stroke="#e2e8f0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></g>
+
+          <!-- Animated writing strokes -->
+          <g id="strokeAnimGroup" fill="none" stroke="var(--primary)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></g>
+
+          <!-- Number badges -->
+          <g id="strokeNumbersGroup"></g>
+        </svg>
+        <canvas id="practiceCanvas" width="150" height="150" style="display:none;"></canvas>
+      </div>
+
+      <div class="stroke-actions">
+        <button class="stroke-action-btn" onclick="playStrokeAnimation()">
+          <span>▶</span> 筆順動畫
+        </button>
+        <button class="stroke-action-btn" id="practiceToggleBtn" onclick="togglePracticeMode()">
+          <span>✍️</span> 臨摹練習
+        </button>
+        <button class="stroke-action-btn" id="clearPracticeBtn" onclick="clearPracticeCanvas()" style="display:none;">
+          <span>🧹</span> 清除
+        </button>
+      </div>
+      <div class="stroke-count-label" id="strokeCountLabel">共 3 劃</div>
+      <div class="pair-char" id="modalPair" style="margin-top:6px;">片假名：ア</div>
     </div>
     <div class="tip-box">
       <strong>💡 記憶技巧</strong>
@@ -1436,6 +1776,8 @@ let isAutoPlaying = false;
 let autoIndex = 0;
 let autoTimer = null;
 let autoList = [];
+let currentRowIndex = 0;
+let tableViewMode = 'carousel'; // 'carousel' or 'grid'
 
 function getSequentialList() {
   const list = [];
@@ -1472,6 +1814,11 @@ function startAutoPlay() {
 function pauseAutoPlay() {
   isAutoPlaying = false;
   if (autoTimer) clearTimeout(autoTimer);
+  const progressFill = document.getElementById('apProgressFill');
+  if (progressFill) {
+    progressFill.style.transition = 'none';
+    progressFill.style.width = '0%';
+  }
   const playBtn = document.getElementById('apPlayBtn');
   if (playBtn) {
     playBtn.textContent = '▶ 繼續朗讀';
@@ -1486,6 +1833,12 @@ function stopAutoPlay() {
   if (autoTimer) clearTimeout(autoTimer);
   autoIndex = 0;
   document.querySelectorAll('.kana-cell.reading-now').forEach(c => c.classList.remove('reading-now'));
+  document.querySelectorAll('.row-char-item.reading-now').forEach(c => c.classList.remove('reading-now'));
+  const progressFill = document.getElementById('apProgressFill');
+  if (progressFill) {
+    progressFill.style.transition = 'none';
+    progressFill.style.width = '0%';
+  }
   const playBtn = document.getElementById('apPlayBtn');
   const stopBtn = document.getElementById('apStopBtn');
   if (playBtn) {
@@ -1501,7 +1854,6 @@ function playNextAuto() {
   if (!isAutoPlaying) return;
 
   if (autoIndex >= autoList.length) {
-    // Finished reading all 46!
     stopAutoPlay();
     showToast('🎉 五十音全表朗讀完畢！');
     confetti(25);
@@ -1515,19 +1867,45 @@ function playNextAuto() {
     label.textContent = `正在朗讀: ${charDisplay} (${ch.roma}) [${autoIndex + 1}/${autoList.length}]`;
   }
 
-  // Highlight cell
+  // Get selected delay (default 3500ms for comfortable pacing)
+  const speedSelect = document.getElementById('apSpeed');
+  const delay = speedSelect ? (parseInt(speedSelect.value, 10) || 3500) : 3500;
+
+  // Visual countdown progress bar
+  const progressFill = document.getElementById('apProgressFill');
+  if (progressFill) {
+    progressFill.style.transition = 'none';
+    progressFill.style.width = '0%';
+    void progressFill.offsetWidth; // force reflow
+    progressFill.style.transition = `width ${delay}ms linear`;
+    progressFill.style.width = '100%';
+  }
+
+  // Highlight in Full Grid view
   document.querySelectorAll('.kana-cell.reading-now').forEach(c => c.classList.remove('reading-now'));
   const cell = document.getElementById(`cell-${ch.roma}`);
   if (cell) {
     cell.classList.add('reading-now');
-    cell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (tableViewMode === 'grid') {
+      cell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  // Sync and highlight in Row Carousel view
+  const targetRowIdx = KANA_DATA.rows.findIndex(r => r.chars.some(c => c.roma === ch.roma));
+  if (targetRowIdx !== -1 && targetRowIdx !== currentRowIndex) {
+    currentRowIndex = targetRowIdx;
+    renderRowCarousel();
+  }
+  document.querySelectorAll('.row-char-item.reading-now').forEach(c => c.classList.remove('reading-now'));
+  const rowCell = document.getElementById(`row-cell-${ch.roma}`);
+  if (rowCell) {
+    rowCell.classList.add('reading-now');
   }
 
   // Play audio
   playKana(ch.roma, ch.hira);
 
-  const speedSelect = document.getElementById('apSpeed');
-  const delay = speedSelect ? (parseInt(speedSelect.value, 10) || 1700) : 1700;
   autoIndex++;
   autoTimer = setTimeout(playNextAuto, delay);
 }
@@ -1541,10 +1919,12 @@ function switchType(type, btn) {
   document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderTable();
+  renderRowCarousel();
 }
 
 function renderTable() {
   const container = document.getElementById('kanaTable');
+  if (!container) return;
   container.innerHTML = '';
   KANA_DATA.rows.forEach(row => {
     const div = document.createElement('div');
@@ -1585,26 +1965,543 @@ function renderTable() {
 }
 
 // ============================================================
-//  MODAL
+//  ROW CAROUSEL VIEW (Swipeable 50-on Table)
+// ============================================================
+function renderRowPills() {
+  const bar = document.getElementById('rowPillsBar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  KANA_DATA.rows.forEach((row, idx) => {
+    const pill = document.createElement('div');
+    pill.className = `row-pill${idx === currentRowIndex ? ' active' : ''}`;
+    const shortLabel = row.label.split(' ')[0] || row.label;
+    pill.textContent = shortLabel;
+    pill.onclick = () => renderRowCarousel(idx);
+    bar.appendChild(pill);
+  });
+}
+
+function renderRowCarousel(rowIdx = null) {
+  if (rowIdx !== null) {
+    currentRowIndex = (rowIdx + KANA_DATA.rows.length) % KANA_DATA.rows.length;
+  }
+  const row = KANA_DATA.rows[currentRowIndex];
+  if (!row) return;
+
+  const pills = document.querySelectorAll('#rowPillsBar .row-pill');
+  pills.forEach((p, idx) => {
+    p.classList.toggle('active', idx === currentRowIndex);
+    if (idx === currentRowIndex) {
+      p.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  });
+
+  const titleEl = document.getElementById('rowCardTitle');
+  if (titleEl) titleEl.textContent = row.label;
+  const countEl = document.getElementById('rowCountLabel');
+  if (countEl) countEl.textContent = `${currentRowIndex + 1} / ${KANA_DATA.rows.length} 行`;
+
+  const grid = document.getElementById('rowCharsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  row.chars.forEach(ch => {
+    const item = document.createElement('div');
+    if (ch.empty || !ch.roma) {
+      item.className = 'row-char-item';
+      item.style.opacity = '0.25';
+      item.style.pointerEvents = 'none';
+      item.innerHTML = `<span class="rci-main" style="color:#cbd5e1;">-</span>`;
+    } else {
+      const keyH = `hira-${ch.hira}`;
+      const keyK = `kata-${ch.kata}`;
+      const isLearned = state.learned[keyH] || state.learned[keyK];
+      item.className = `row-char-item${isLearned ? ' learned' : ''}`;
+      item.id = `row-cell-${ch.roma}`;
+
+      const strokesData = (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[ch.hira]) 
+                          ? KANA_STROKES[ch.hira].length : 0;
+      let mainChar = ch.hira;
+      let subChar = ch.kata;
+      if (currentType === 'katakana') {
+        mainChar = ch.kata;
+        subChar = ch.hira;
+      } else if (currentType === 'both') {
+        mainChar = ch.hira;
+        subChar = ch.kata;
+      }
+
+      item.innerHTML = `
+        <span class="rci-main">${mainChar}</span>
+        <span class="rci-roma">${ch.roma}</span>
+        <span class="rci-sub">${subChar}</span>
+        <span class="rci-stroke-badge">${strokesData ? strokesData + ' 劃' : ''}</span>
+      `;
+
+      item.onclick = () => openModal(ch);
+    }
+    grid.appendChild(item);
+  });
+}
+
+function nextRow() {
+  const card = document.getElementById('rowSwipeCard');
+  if (!card) return;
+  card.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
+  card.style.transform = 'translateX(-40px)';
+  card.style.opacity = '0.5';
+  setTimeout(() => {
+    currentRowIndex = (currentRowIndex + 1) % KANA_DATA.rows.length;
+    renderRowCarousel();
+    card.style.transition = 'none';
+    card.style.transform = 'translateX(40px)';
+    void card.offsetHeight;
+    card.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+    card.style.transform = 'translateX(0)';
+    card.style.opacity = '1';
+  }, 150);
+}
+
+function prevRow() {
+  const card = document.getElementById('rowSwipeCard');
+  if (!card) return;
+  card.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
+  card.style.transform = 'translateX(40px)';
+  card.style.opacity = '0.5';
+  setTimeout(() => {
+    currentRowIndex = (currentRowIndex - 1 + KANA_DATA.rows.length) % KANA_DATA.rows.length;
+    renderRowCarousel();
+    card.style.transition = 'none';
+    card.style.transform = 'translateX(-40px)';
+    void card.offsetHeight;
+    card.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+    card.style.transform = 'translateX(0)';
+    card.style.opacity = '1';
+  }, 150);
+}
+
+function playCurrentRow() {
+  const row = KANA_DATA.rows[currentRowIndex];
+  if (!row) return;
+  const validChars = row.chars.filter(c => !c.empty && c.roma);
+  if (validChars.length === 0) return;
+
+  validChars.forEach((ch, idx) => {
+    setTimeout(() => {
+      document.querySelectorAll('.row-char-item.reading-now').forEach(c => c.classList.remove('reading-now'));
+      const el = document.getElementById(`row-cell-${ch.roma}`);
+      if (el) el.classList.add('reading-now');
+      playKana(ch.roma, ch.hira);
+      setTimeout(() => {
+        if (el) el.classList.remove('reading-now');
+      }, 900);
+    }, idx * 1100);
+  });
+}
+
+function switchTableView(mode) {
+  tableViewMode = mode;
+  const carouselSec = document.getElementById('rowCarouselSection');
+  const gridSec = document.getElementById('fullGridSection');
+  const btnCarousel = document.getElementById('tvModeCarousel');
+  const btnGrid = document.getElementById('tvModeGrid');
+
+  if (mode === 'carousel') {
+    if (carouselSec) carouselSec.style.display = 'block';
+    if (gridSec) gridSec.style.display = 'none';
+    if (btnCarousel) btnCarousel.classList.add('active');
+    if (btnGrid) btnGrid.classList.remove('active');
+    renderRowCarousel();
+  } else {
+    if (carouselSec) carouselSec.style.display = 'none';
+    if (gridSec) gridSec.style.display = 'block';
+    if (btnCarousel) btnCarousel.classList.remove('active');
+    if (btnGrid) btnGrid.classList.add('active');
+    renderTable();
+  }
+}
+
+function initRowCarouselSwipe() {
+  const card = document.getElementById('rowSwipeCard');
+  if (!card) return;
+
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let isDragging = false;
+  let startTime = 0;
+
+  const getCoord = (e) => {
+    if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  };
+
+  const onStart = (e) => {
+    if (e.type === 'mousedown' && e.button !== 0) return;
+    const coord = getCoord(e);
+    startX = coord.x;
+    startY = coord.y;
+    currentX = coord.x;
+    isDragging = true;
+    startTime = Date.now();
+    card.style.transition = 'none';
+  };
+
+  const onMove = (e) => {
+    if (!isDragging) return;
+    const coord = getCoord(e);
+    const deltaX = coord.x - startX;
+    const deltaY = coord.y - startY;
+
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaX) < 15) return;
+    if (e.cancelable) e.preventDefault();
+
+    currentX = coord.x;
+    const rot = (deltaX / 300) * 5;
+    card.style.transform = `translateX(${deltaX}px) rotate(${rot}deg)`;
+  };
+
+  const onEnd = (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    let endX = currentX;
+    if (e.changedTouches && e.changedTouches.length > 0) endX = e.changedTouches[0].clientX;
+    const deltaX = endX - startX;
+
+    const threshold = 40;
+    if (deltaX < -threshold) {
+      nextRow();
+    } else if (deltaX > threshold) {
+      prevRow();
+    } else {
+      card.style.transition = 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      card.style.transform = 'translateX(0) rotate(0deg)';
+    }
+  };
+
+  card.addEventListener('touchstart', onStart, { passive: true });
+  card.addEventListener('touchmove', onMove, { passive: false });
+  card.addEventListener('touchend', onEnd);
+  card.addEventListener('touchcancel', onEnd);
+
+  card.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+}
+
+// ============================================================
+//  STROKE ORDER ANIMATION & TRACING PRACTICE CANVAS
+// ============================================================
+let strokeAnimTimeouts = [];
+let isPracticeActive = false;
+let isDrawing = false;
+let practiceCtx = null;
+
+function clearStrokeAnimation() {
+  strokeAnimTimeouts.forEach(t => clearTimeout(t));
+  strokeAnimTimeouts = [];
+  const animGroup = document.getElementById('strokeAnimGroup');
+  if (animGroup) animGroup.innerHTML = '';
+}
+
+function renderKanaStrokes(ch) {
+  clearStrokeAnimation();
+  clearPracticeCanvas();
+
+  const ghostGroup = document.getElementById('strokeGhostGroup');
+  const numbersGroup = document.getElementById('strokeNumbersGroup');
+  const strokeCountLabel = document.getElementById('strokeCountLabel');
+  if (!ghostGroup || !numbersGroup) return;
+
+  ghostGroup.innerHTML = '';
+  numbersGroup.innerHTML = '';
+
+  const charToShow = currentType === 'katakana' ? ch.kata : ch.hira;
+  const paths = (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[charToShow]) 
+                || (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[ch.hira]) 
+                || (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[ch.kata]) 
+                || [];
+
+  if (strokeCountLabel) {
+    strokeCountLabel.textContent = `共 ${paths.length} 劃`;
+  }
+
+  if (paths.length === 0) {
+    ghostGroup.innerHTML = `<text x="54.5" y="70" font-size="52" text-anchor="middle" fill="#cbd5e1" font-family="var(--font-jp)">${charToShow}</text>`;
+    return;
+  }
+
+  // 1. Ghost outlines
+  paths.forEach(d => {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('stroke', '#e2e8f0');
+    p.setAttribute('stroke-width', '7');
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke-linecap', 'round');
+    p.setAttribute('stroke-linejoin', 'round');
+    ghostGroup.appendChild(p);
+  });
+
+  // 2. Stroke numbers at starts
+  paths.forEach((d, idx) => {
+    const m = d.match(/M\s*([\d.-]+)[,\s]+([\d.-]+)/);
+    if (m) {
+      const x = parseFloat(m[1]);
+      const y = parseFloat(m[2]);
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', x);
+      circle.setAttribute('cy', y);
+      circle.setAttribute('r', '5.5');
+      circle.setAttribute('fill', '#457b9d');
+      circle.setAttribute('stroke', 'white');
+      circle.setAttribute('stroke-width', '1');
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', x);
+      text.setAttribute('y', y + 2.5);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-size', '6');
+      text.setAttribute('font-weight', 'bold');
+      text.setAttribute('fill', 'white');
+      text.textContent = (idx + 1).toString();
+
+      g.appendChild(circle);
+      g.appendChild(text);
+      numbersGroup.appendChild(g);
+    }
+  });
+
+  // 3. Play animation
+  playStrokeAnimation();
+}
+
+function playStrokeAnimation() {
+  clearStrokeAnimation();
+  if (!currentModalChar) return;
+
+  const charToShow = currentType === 'katakana' ? currentModalChar.kata : currentModalChar.hira;
+  const paths = (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[charToShow]) 
+                || (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[currentModalChar.hira]) 
+                || (typeof KANA_STROKES !== 'undefined' && KANA_STROKES[currentModalChar.kata]) 
+                || [];
+
+  const animGroup = document.getElementById('strokeAnimGroup');
+  if (!animGroup || paths.length === 0) return;
+  animGroup.innerHTML = '';
+
+  let currentDelay = 80;
+  paths.forEach((d, idx) => {
+    const t = setTimeout(() => {
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('d', d);
+      p.setAttribute('stroke', 'var(--primary)');
+      p.setAttribute('stroke-width', '7');
+      p.setAttribute('fill', 'none');
+      p.setAttribute('stroke-linecap', 'round');
+      p.setAttribute('stroke-linejoin', 'round');
+      animGroup.appendChild(p);
+
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      void p.getBoundingClientRect(); // reflow
+      const strokeDuration = Math.max(300, Math.min(650, len * 3.8));
+      p.style.transition = `stroke-dashoffset ${strokeDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+      p.style.strokeDashoffset = '0';
+    }, currentDelay);
+
+    strokeAnimTimeouts.push(t);
+    currentDelay += 550;
+  });
+}
+
+function initPracticeCanvas() {
+  const canvas = document.getElementById('practiceCanvas');
+  if (!canvas) return;
+  practiceCtx = canvas.getContext('2d');
+
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches && e.touches.length > 0) {
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY
+      };
+    }
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  };
+
+  const startDraw = (e) => {
+    if (!isPracticeActive) return;
+    if (e.cancelable) e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    practiceCtx.beginPath();
+    practiceCtx.moveTo(pos.x, pos.y);
+    practiceCtx.lineCap = 'round';
+    practiceCtx.lineJoin = 'round';
+    practiceCtx.lineWidth = 8;
+    practiceCtx.strokeStyle = '#e63946';
+  };
+
+  const draw = (e) => {
+    if (!isDrawing || !isPracticeActive) return;
+    if (e.cancelable) e.preventDefault();
+    const pos = getPos(e);
+    practiceCtx.lineTo(pos.x, pos.y);
+    practiceCtx.stroke();
+  };
+
+  const stopDraw = () => {
+    if (isDrawing) {
+      isDrawing = false;
+      practiceCtx.closePath();
+    }
+  };
+
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', stopDraw);
+  canvas.addEventListener('touchcancel', stopDraw);
+
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  window.addEventListener('mouseup', stopDraw);
+}
+
+function togglePracticeMode() {
+  const canvas = document.getElementById('practiceCanvas');
+  const toggleBtn = document.getElementById('practiceToggleBtn');
+  const clearBtn = document.getElementById('clearPracticeBtn');
+  if (!canvas) return;
+
+  isPracticeActive = !isPracticeActive;
+  if (isPracticeActive) {
+    canvas.style.display = 'block';
+    if (toggleBtn) {
+      toggleBtn.classList.add('active');
+      toggleBtn.innerHTML = '<span>✍️</span> 描紅中';
+    }
+    if (clearBtn) clearBtn.style.display = 'inline-flex';
+  } else {
+    canvas.style.display = 'none';
+    if (toggleBtn) {
+      toggleBtn.classList.remove('active');
+      toggleBtn.innerHTML = '<span>✍️</span> 臨摹練習';
+    }
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
+}
+
+function clearPracticeCanvas() {
+  const canvas = document.getElementById('practiceCanvas');
+  if (canvas && practiceCtx) {
+    practiceCtx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+// ============================================================
+//  MODAL NAVIGATION & SWIPE
 // ============================================================
 let currentModalChar = null;
 
 function openModal(ch) {
   currentModalChar = ch;
-  document.getElementById('modalChar').textContent = currentType === 'katakana' ? ch.kata : ch.hira;
+  const isKata = currentType === 'katakana';
+  const charDisplay = isKata ? ch.kata : ch.hira;
+  const pairDisplay = isKata ? `平假名：${ch.hira}` : `片假名：${ch.kata}`;
+
+  document.getElementById('modalChar').textContent = charDisplay;
   document.getElementById('modalRoma').textContent = ch.roma;
-  document.getElementById('modalPair').textContent = currentType === 'katakana'
-    ? `平假名：${ch.hira}` : `片假名：${ch.kata}`;
+  document.getElementById('modalPair').textContent = pairDisplay;
   document.getElementById('modalTip').textContent = ch.tip;
 
-  const key = `hira-${ch.hira}`;
+  const keyH = `hira-${ch.hira}`;
+  const keyK = `kata-${ch.kata}`;
+  const isLearned = state.learned[keyH] || state.learned[keyK];
   const btn = document.getElementById('modalLearnBtn');
-  btn.textContent = state.learned[key] ? '✅ 已學會' : '☆ 標記已學';
-  btn.style.background = state.learned[key]
+  btn.textContent = isLearned ? '✅ 已學會' : '☆ 標記已學';
+  btn.style.background = isLearned
     ? 'linear-gradient(135deg,#aaa,#888)' : 'linear-gradient(135deg,#2ecc71,#27ae60)';
 
   document.getElementById('kanaModal').classList.add('open');
+  renderKanaStrokes(ch);
   speakModal();
+}
+
+function modalNextChar() {
+  const list = getSequentialList();
+  if (list.length === 0 || !currentModalChar) return;
+  const idx = list.findIndex(c => c.roma === currentModalChar.roma);
+  const nextIdx = (idx + 1) % list.length;
+  openModal(list[nextIdx]);
+}
+
+function modalPrevChar() {
+  const list = getSequentialList();
+  if (list.length === 0 || !currentModalChar) return;
+  const idx = list.findIndex(c => c.roma === currentModalChar.roma);
+  const prevIdx = (idx - 1 + list.length) % list.length;
+  openModal(list[prevIdx]);
+}
+
+function initModalSwipe() {
+  const modalEl = document.getElementById('modalContent');
+  if (!modalEl) return;
+
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let isDragging = false;
+  let startTime = 0;
+
+  const getCoord = (e) => {
+    if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  };
+
+  modalEl.addEventListener('touchstart', (e) => {
+    if (isPracticeActive && e.target && e.target.id === 'practiceCanvas') return;
+    const coord = getCoord(e);
+    startX = coord.x;
+    startY = coord.y;
+    currentX = coord.x;
+    isDragging = true;
+    startTime = Date.now();
+  }, { passive: true });
+
+  modalEl.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const coord = getCoord(e);
+    const deltaX = coord.x - startX;
+    const deltaY = coord.y - startY;
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+    currentX = coord.x;
+  }, { passive: true });
+
+  modalEl.addEventListener('touchend', (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    let endX = currentX;
+    if (e.changedTouches && e.changedTouches.length > 0) endX = e.changedTouches[0].clientX;
+    const deltaX = endX - startX;
+    const elapsed = Date.now() - startTime;
+    if (elapsed < 400 && Math.abs(deltaX) > 45) {
+      if (deltaX < 0) {
+        modalNextChar();
+      } else {
+        modalPrevChar();
+      }
+    }
+  });
 }
 
 function closeModal(e) {
@@ -1612,6 +2509,8 @@ function closeModal(e) {
 }
 function closeModalDirect() {
   document.getElementById('kanaModal').classList.remove('open');
+  clearStrokeAnimation();
+  if (isPracticeActive) togglePracticeMode();
 }
 
 function toggleLearnModal() {
@@ -1629,6 +2528,7 @@ function toggleLearnModal() {
 
   saveState();
   renderTable();
+  renderRowCarousel();
   checkStreak();
 
   if (!wasLearned) {
@@ -2333,6 +3233,11 @@ document.getElementById('installBtn') && document.getElementById('installBtn').a
 // ============================================================
 window.addEventListener('load', () => {
   renderTable();
+  renderRowPills();
+  renderRowCarousel(0);
+  initRowCarouselSwipe();
+  initModalSwipe();
+  initPracticeCanvas();
   buildFlashList();
   renderPlan();
   updateProgress();

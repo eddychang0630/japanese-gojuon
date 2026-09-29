@@ -1,8 +1,9 @@
-const CACHE_NAME = 'jp50on-v2.3';
+const CACHE_NAME = 'jp50on-v3.1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './strokes.js',
   './icons/icon-72.png',
   './icons/icon-96.png',
   './icons/icon-128.png',
