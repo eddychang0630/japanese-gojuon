@@ -61,6 +61,34 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
+    .nav-refresh-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      outline: none;
+      padding: 0;
+    }
+    .nav-refresh-btn:active {
+      transform: scale(0.9);
+      background: rgba(255,255,255,0.35);
+    }
+    .nav-refresh-btn.spinning .refresh-icon {
+      display: inline-block;
+      animation: spinRefresh 0.7s linear infinite;
+    }
+    @keyframes spinRefresh {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
     /* ===== BOTTOM NAV ===== */
     .bottom-nav {
@@ -848,7 +876,12 @@
     <div class="top-nav h1" style="font-size:1.15rem;font-weight:700;">🌸 日文五十音</div>
     <div class="subtitle">從零開始學習日文</div>
   </div>
-  <div class="progress-mini" id="topProgress">已學 0/92</div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <button class="nav-refresh-btn" id="navRefreshBtn" onclick="hardRefreshApp()" title="重新整理 / 檢查最新版本">
+      <span class="refresh-icon">🔄</span>
+    </button>
+    <div class="progress-mini" id="topProgress">已學 0/92</div>
+  </div>
 </nav>
 
 <!-- INSTALL BANNER -->
@@ -1123,8 +1156,9 @@
     <div id="vocabList"></div>
   </div>
 
-  <div style="text-align:center; padding: 8px 0 16px;">
-    <button onclick="resetProgress()" style="background:none;border:1px solid var(--danger);color:var(--danger);border-radius:8px;padding:8px 20px;font-size:0.8rem;cursor:pointer;">🗑️ 重置進度</button>
+  <div style="text-align:center; padding: 10px 0 20px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+    <button onclick="hardRefreshApp()" style="background:#f1f5f9;border:1px solid #cbd5e1;color:var(--text);border-radius:8px;padding:8px 16px;font-size:0.8rem;font-weight:600;cursor:pointer;">🔄 重新整理 / 檢查更新</button>
+    <button onclick="resetProgress()" style="background:none;border:1px solid var(--danger);color:var(--danger);border-radius:8px;padding:8px 16px;font-size:0.8rem;cursor:pointer;">🗑️ 重置進度</button>
   </div>
 </div>
 
@@ -2235,6 +2269,28 @@ function renderPlan() {
     `;
     el.appendChild(div);
   });
+}
+
+// ============================================================
+//  HARD REFRESH / UPDATE APP
+// ============================================================
+function hardRefreshApp() {
+  const btn = document.getElementById('navRefreshBtn');
+  if (btn) btn.classList.add('spinning');
+  showToast('🔄 正在檢查更新並重新載入...');
+
+  // Check and update service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let reg of registrations) {
+        reg.update();
+      }
+    }).catch(e => console.log('SW update check:', e));
+  }
+
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
 }
 
 // ============================================================
