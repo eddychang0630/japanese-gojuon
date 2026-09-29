@@ -458,8 +458,38 @@
       max-width: 340px;
       height: 220px;
       perspective: 1000px;
-      margin-bottom: 20px;
-      cursor: pointer;
+      margin-bottom: 12px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
+      position: relative;
+      will-change: transform, opacity;
+    }
+    .flashcard:active {
+      cursor: grabbing;
+    }
+    .swipe-badge {
+      position: absolute;
+      top: 14px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: white;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .badge-prev {
+      left: 14px;
+      background: rgba(69, 123, 157, 0.95);
+    }
+    .badge-next {
+      right: 14px;
+      background: rgba(230, 57, 70, 0.95);
     }
     .flashcard-inner {
       position: relative;
@@ -866,7 +896,17 @@
   </div>
 
   <div class="flashcard-wrap">
-    <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+      <span>👈 左滑下一張</span>
+      <span>•</span>
+      <span>點擊翻面</span>
+      <span>•</span>
+      <span>右滑上一張 👉</span>
+    </div>
+
+    <div class="flashcard" id="flashcard">
+      <div class="swipe-badge badge-prev" id="badgePrev">◀ 上一張</div>
+      <div class="swipe-badge badge-next" id="badgeNext">下一張 ▶</div>
       <div class="flashcard-inner">
         <div class="flashcard-front">
           <span class="fc-char" id="fcChar">あ</span>
@@ -1549,6 +1589,146 @@ function markCard(rating) {
 }
 
 // ============================================================
+//  SWIPE GESTURES FOR FLASHCARD (Touch & Pointer)
+// ============================================================
+function initFlashcardSwipe() {
+  const cardEl = document.getElementById('flashcard');
+  if (!cardEl) return;
+
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let isDragging = false;
+  let startTime = 0;
+  let isSwiping = false;
+
+  const getCoord = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  };
+
+  const onStart = (e) => {
+    if (isSwiping) return;
+    if (e.type === 'mousedown' && e.button !== 0) return;
+    const coord = getCoord(e);
+    startX = coord.x;
+    startY = coord.y;
+    currentX = coord.x;
+    isDragging = true;
+    startTime = Date.now();
+    cardEl.style.transition = 'none';
+  };
+
+  const onMove = (e) => {
+    if (!isDragging || isSwiping) return;
+    const coord = getCoord(e);
+    const deltaX = coord.x - startX;
+    const deltaY = coord.y - startY;
+
+    // Ignore if vertical scroll
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaX) < 15) {
+      return;
+    }
+
+    if (e.cancelable) e.preventDefault();
+
+    currentX = coord.x;
+    const rot = (deltaX / 300) * 12;
+    cardEl.style.transform = `translateX(${deltaX}px) rotate(${rot}deg)`;
+
+    const badgePrev = document.getElementById('badgePrev');
+    const badgeNext = document.getElementById('badgeNext');
+    if (badgePrev && badgeNext) {
+      if (deltaX > 25) {
+        badgePrev.style.opacity = Math.min(1, (deltaX - 25) / 50);
+        badgeNext.style.opacity = 0;
+      } else if (deltaX < -25) {
+        badgeNext.style.opacity = Math.min(1, (-deltaX - 25) / 50);
+        badgePrev.style.opacity = 0;
+      } else {
+        badgePrev.style.opacity = 0;
+        badgeNext.style.opacity = 0;
+      }
+    }
+  };
+
+  const onEnd = (e) => {
+    if (!isDragging || isSwiping) return;
+    isDragging = false;
+
+    let endX = currentX;
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      endX = e.changedTouches[0].clientX;
+    }
+    const deltaX = endX - startX;
+    const elapsed = Date.now() - startTime;
+
+    const badgePrev = document.getElementById('badgePrev');
+    const badgeNext = document.getElementById('badgeNext');
+    if (badgePrev) badgePrev.style.opacity = 0;
+    if (badgeNext) badgeNext.style.opacity = 0;
+
+    // Tap detection: minimal movement + quick duration -> flip
+    if (Math.abs(deltaX) < 10 && elapsed < 350) {
+      cardEl.style.transition = 'transform 0.25s ease';
+      cardEl.style.transform = '';
+      flipCard();
+      return;
+    }
+
+    const threshold = 55;
+    if (deltaX < -threshold) {
+      // Swiped Left -> Next Card
+      isSwiping = true;
+      cardEl.style.transition = 'transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease';
+      cardEl.style.transform = 'translateX(-120%) rotate(-12deg)';
+      cardEl.style.opacity = '0';
+      setTimeout(() => {
+        fcNext();
+        cardEl.style.transition = 'none';
+        cardEl.style.transform = 'translateX(100%) rotate(10deg)';
+        cardEl.offsetHeight; // force reflow
+        cardEl.style.transition = 'transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.26s ease';
+        cardEl.style.transform = 'translateX(0) rotate(0deg)';
+        cardEl.style.opacity = '1';
+        setTimeout(() => { isSwiping = false; }, 260);
+      }, 200);
+    } else if (deltaX > threshold) {
+      // Swiped Right -> Prev Card
+      isSwiping = true;
+      cardEl.style.transition = 'transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease';
+      cardEl.style.transform = 'translateX(120%) rotate(12deg)';
+      cardEl.style.opacity = '0';
+      setTimeout(() => {
+        fcPrev();
+        cardEl.style.transition = 'none';
+        cardEl.style.transform = 'translateX(-100%) rotate(-10deg)';
+        cardEl.offsetHeight; // force reflow
+        cardEl.style.transition = 'transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.26s ease';
+        cardEl.style.transform = 'translateX(0) rotate(0deg)';
+        cardEl.style.opacity = '1';
+        setTimeout(() => { isSwiping = false; }, 260);
+      }, 200);
+    } else {
+      // Snap back if threshold not met
+      cardEl.style.transition = 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      cardEl.style.transform = 'translateX(0) rotate(0deg)';
+    }
+  };
+
+  cardEl.addEventListener('touchstart', onStart, { passive: true });
+  cardEl.addEventListener('touchmove', onMove, { passive: false });
+  cardEl.addEventListener('touchend', onEnd);
+  cardEl.addEventListener('touchcancel', onEnd);
+
+  cardEl.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+}
+
+// ============================================================
 //  QUIZ
 // ============================================================
 let quizQueue = [];
@@ -1922,6 +2102,7 @@ window.addEventListener('load', () => {
   renderPlan();
   updateProgress();
   updateTopProgress();
+  initFlashcardSwipe();
 
   // Register PWA Service Worker
   if ('serviceWorker' in navigator) {
