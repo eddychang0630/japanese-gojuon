@@ -1176,26 +1176,26 @@ const KANA_DATA = {
 };
 
 const VOCAB = [
-  { jp:'こんにちは', roma:'konnichiwa', zh:'你好' },
-  { jp:'ありがとう', roma:'arigatou', zh:'謝謝' },
-  { jp:'すみません', roma:'sumimasen', zh:'不好意思/對不起' },
-  { jp:'はい', roma:'hai', zh:'是的' },
-  { jp:'いいえ', roma:'iie', zh:'不是' },
-  { jp:'おはよう', roma:'ohayou', zh:'早安' },
-  { jp:'おやすみ', roma:'oyasumi', zh:'晚安' },
-  { jp:'さようなら', roma:'sayounara', zh:'再見' },
-  { jp:'たべる', roma:'taberu', zh:'吃' },
-  { jp:'のむ', roma:'nomu', zh:'喝' },
-  { jp:'みる', roma:'miru', zh:'看' },
-  { jp:'いく', roma:'iku', zh:'去' },
-  { jp:'くる', roma:'kuru', zh:'來' },
-  { jp:'みず', roma:'mizu', zh:'水' },
-  { jp:'パン', roma:'pan', zh:'麵包' },
-  { jp:'ねこ', roma:'neko', zh:'貓' },
-  { jp:'いぬ', roma:'inu', zh:'狗' },
-  { jp:'にほん', roma:'nihon', zh:'日本' },
-  { jp:'がっこう', roma:'gakkou', zh:'學校' },
-  { jp:'ともだち', roma:'tomodachi', zh:'朋友' },
+  { id:'v_konnichiwa', jp:'こんにちは', roma:'konnichiwa', zh:'你好' },
+  { id:'v_arigatou',   jp:'ありがとう', roma:'arigatou',   zh:'謝謝' },
+  { id:'v_sumimasen',  jp:'すみません', roma:'sumimasen',  zh:'不好意思/對不起' },
+  { id:'v_hai',        jp:'はい',       roma:'hai',        zh:'是的' },
+  { id:'v_iie',        jp:'いいえ',     roma:'iie',        zh:'不是' },
+  { id:'v_ohayou',     jp:'おはよう',   roma:'ohayou',     zh:'早安' },
+  { id:'v_oyasumi',    jp:'おやすみ',   roma:'oyasumi',    zh:'晚安' },
+  { id:'v_sayounara',  jp:'さようなら', roma:'sayounara',  zh:'再見' },
+  { id:'v_taberu',     jp:'たべる',     roma:'taberu',     zh:'吃' },
+  { id:'v_nomu',       jp:'のむ',       roma:'nomu',       zh:'喝' },
+  { id:'v_miru',       jp:'みる',       roma:'miru',       zh:'看' },
+  { id:'v_iku',        jp:'いく',       roma:'iku',        zh:'去' },
+  { id:'v_kuru',       jp:'くる',       roma:'kuru',       zh:'來' },
+  { id:'v_mizu',       jp:'みず',       roma:'mizu',       zh:'水' },
+  { id:'v_pan',        jp:'パン',       roma:'pan',        zh:'麵包' },
+  { id:'v_neko',       jp:'ねこ',       roma:'neko',       zh:'貓' },
+  { id:'v_inu',        jp:'いぬ',       roma:'inu',        zh:'狗' },
+  { id:'v_nihon',      jp:'にほん',     roma:'nihon',      zh:'日本' },
+  { id:'v_gakkou',     jp:'がっこう',   roma:'gakkou',     zh:'學校' },
+  { id:'v_tomodachi',  jp:'ともだち',   roma:'tomodachi',  zh:'朋友' },
 ];
 
 const ACHIEVEMENTS = [
@@ -1384,63 +1384,59 @@ function toggleLearnModal() {
   }
 }
 
-function speakModal() {
-  if (currentModalChar) speak(currentModalChar.hira || currentModalChar.roma);
+// ============================================================
+//  AUDIO PLAYBACK (Local MP3 first + TTS fallback)
+// ============================================================
+let currentAudio = null;
+
+function playAudioFile(src, fallbackText) {
+  try {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    currentAudio = new Audio(src);
+    const p = currentAudio.play();
+    if (p !== undefined) {
+      p.catch(err => {
+        console.log('Local MP3 playback notice, using TTS fallback:', err);
+        speakTTS(fallbackText);
+      });
+    }
+  } catch (e) {
+    speakTTS(fallbackText);
+  }
 }
 
-// ============================================================
-//  SPEECH (Web Speech API + Reliable Fallback)
-// ============================================================
-let audioFallback = null;
+function playKana(roma, hira) {
+  if (!roma) return;
+  playAudioFile(`audio/${roma}.mp3`, hira || roma);
+}
 
-function speak(text) {
+function playVocab(id, jpText) {
+  if (!id) return;
+  playAudioFile(`audio/${id}.mp3`, jpText);
+}
+
+function speakModal() {
+  if (currentModalChar) playKana(currentModalChar.roma, currentModalChar.hira);
+}
+
+function speakTTS(text) {
   if (!text) return;
-
-  // 1. Try Web Speech API
   if ('speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'ja-JP';
       utter.rate = 0.85;
-      utter.pitch = 1.0;
-
       const voices = window.speechSynthesis.getVoices();
       const jpVoice = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('ja') || v.lang.toLowerCase().includes('jp')));
       if (jpVoice) utter.voice = jpVoice;
-
-      let hasStarted = false;
-      utter.onstart = () => { hasStarted = true; };
-
       window.speechSynthesis.speak(utter);
-
-      // If speech doesn't start (common on iOS when unprompted or no ja-voice installed)
-      setTimeout(() => {
-        if (!hasStarted && (!jpVoice || window.speechSynthesis.paused || window.speechSynthesis.pending)) {
-          playAudioFallback(text);
-        }
-      }, 450);
-      return;
-    } catch (err) {
-      console.warn('SpeechSynthesis error:', err);
+    } catch (e) {
+      console.warn('TTS error:', e);
     }
-  }
-
-  // 2. Fallback to Google TTS audio
-  playAudioFallback(text);
-}
-
-function playAudioFallback(text) {
-  try {
-    if (audioFallback) {
-      audioFallback.pause();
-      audioFallback.currentTime = 0;
-    }
-    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encodeURIComponent(text)}`;
-    audioFallback = new Audio(ttsUrl);
-    audioFallback.play().catch(e => console.log('Audio playback notice:', e));
-  } catch(e) {
-    console.warn('Fallback audio failed:', e);
   }
 }
 
@@ -1526,7 +1522,7 @@ function flipCard() {
 }
 
 function speakCurrent() {
-  if (flashList.length > 0) speak(flashList[flashIdx].hira || flashList[flashIdx].roma);
+  if (flashList.length > 0) playKana(flashList[flashIdx].roma, flashList[flashIdx].hira);
 }
 
 function fcNext() {
@@ -1633,7 +1629,7 @@ function renderQuestion() {
   });
 
   // Auto-speak
-  speak(ch.hira || ch.roma);
+  playKana(ch.roma, ch.hira);
 }
 
 function answerQuiz(selected, correct, btn, ch) {
@@ -1681,7 +1677,7 @@ function skipQuestion() {
 }
 
 function speakQuestion() {
-  if (quizCurrent < quizQueue.length) speak(quizQueue[quizCurrent].hira || quizQueue[quizCurrent].roma);
+  if (quizCurrent < quizQueue.length) playKana(quizQueue[quizCurrent].roma, quizQueue[quizCurrent].hira);
 }
 
 function showResult() {
@@ -1789,7 +1785,7 @@ function updateProgress() {
           <div class="vocab-roma">${v.roma}</div>
         </div>
         <div class="vocab-zh">${v.zh}</div>
-        <button class="vocab-play" onclick="speak('${v.jp}')">🔊</button>
+        <button class="vocab-play" onclick="playVocab('${v.id || v.roma}','${v.jp}')">🔊</button>
       `;
       vocabEl.appendChild(div);
     });
