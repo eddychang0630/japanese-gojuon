@@ -1056,6 +1056,147 @@
     .step-content strong { font-size: 0.85rem; display: block; margin-bottom: 2px; }
     .step-content p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
 
+    /* ===== MEMORY TIPS & MNEMONICS ===== */
+    .guide-card-section {
+      margin-top: 14px;
+    }
+    .guide-trigger-btn {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 1px solid #ffd60a;
+      color: #856404;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      width: 100%;
+      box-shadow: 0 2px 6px rgba(255, 214, 10, 0.2);
+      transition: all 0.2s;
+    }
+    .guide-trigger-btn:active { transform: scale(0.97); }
+
+    .guide-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .guide-box.highlight {
+      background: #fff8f8;
+      border-color: #ffd5d8;
+    }
+    .guide-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .guide-box-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .guide-tag-pill {
+      background: #e2e8f0;
+      color: var(--secondary);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .guide-mnemonic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .mnemonic-item {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mnemonic-item:hover {
+      background: #fff5f5;
+      border-color: var(--primary-light);
+    }
+    .mnemonic-item:active {
+      transform: scale(0.96);
+    }
+    .mnemonic-code {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+    .mnemonic-zh {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mnemonic-chars {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-jp);
+    }
+    .coord-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 0.72rem;
+      text-align: center;
+    }
+    .coord-table th, .coord-table td {
+      border: 1px solid #e2e8f0;
+      padding: 6px 3px;
+    }
+    .coord-table th {
+      background: #f1f5f9;
+      color: var(--text);
+      font-weight: 700;
+    }
+    .coord-table .coord-row-hdr {
+      background: #fff0f2;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .coord-table .coord-dan-hdr {
+      background: #eff6ff;
+      color: var(--secondary);
+      font-weight: 700;
+    }
+    .tip-callout {
+      border-left: 4px solid var(--accent);
+      background: #fffcf4;
+      padding: 10px 12px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: #78350f;
+      margin: 8px 0;
+    }
+    .guide-modal-body {
+      max-height: 75vh;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-top: 10px;
+    }
+
     .vocab-item {
       display: flex;
       align-items: center;
@@ -1189,34 +1330,159 @@
     <div id="learningPlan"></div>
   </div>
 
-  <div class="card">
-    <div class="card-title">💡 給初學者的建議</div>
-    <div class="guide-step">
-      <div class="step-num">1</div>
-      <div class="step-content">
-        <strong>先背平假名（あいうえお）</strong>
-        <p>平假名是最基本的，日文的所有發音都能用它表示。先從第一行「あ行」開始。</p>
+  <div class="card" id="beginnerGuideCard">
+    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>💡 五十音記憶秘笈與常見迷思</span>
+      <span class="guide-tag-pill">初學必讀</span>
+    </div>
+
+    <!-- 1. 迷思破解：需要背 1~50 號編號嗎？ -->
+    <div class="guide-box highlight">
+      <div class="guide-box-header">
+        <div class="guide-box-title">
+          <span>❓ 迷思破解：五十音需要背 1~50 號編號嗎？</span>
+        </div>
+        <span class="guide-tag-pill" style="background:#fee2e2; color:#b91c1c;">千萬不要死背號碼</span>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text); line-height:1.6; margin-bottom:8px;">
+        <strong>完全不用！</strong> 日本人生活與檢定考試中<strong>從來沒有「第幾號假名」的概念</strong>。字卡上的「1/46」純粹是自我學習進度條，不是字號！
+      </p>
+      <div class="tip-callout">
+        <strong>為什麼叫五十音卻只有 46 個字？</strong><br>
+        5 個母音 × 10 行子音本來是 50 格，但歷史演變中「や行」缺少 yi、ye，現代「わ行」廢除了 wu、wi(ゐ)、we(ゑ)，加上 1 個撥音「ん」，實際只有 <strong>46 個基礎假名</strong>。如果硬背 1~50 號會有很多空號，反而混淆！
       </div>
     </div>
-    <div class="guide-step">
-      <div class="step-num">2</div>
-      <div class="step-content">
-        <strong>利用聯想記憶</strong>
-        <p>例如：「あ（a）」看起來像「啊」字；「い（i）」像兩根手指；點表格中的字可看記憶小技巧。</p>
+
+    <!-- 2. 九九乘法表「行 × 段」坐標法 -->
+    <div class="guide-box">
+      <div class="guide-box-header">
+        <div class="guide-box-title">
+          <span>🧠 核心法寶：九九乘法表「行 × 段」二維坐標法</span>
+        </div>
+        <span class="guide-tag-pill">日語思維</span>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text); line-height:1.6; margin-bottom:8px;">
+        日本人定位假名就像查九九乘法表，看的是<strong>「行」與「段」</strong>的交叉點：
+      </p>
+      <table class="coord-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="coord-dan-hdr">あ段 (-a)</th>
+            <th class="coord-dan-hdr">い段 (-i)</th>
+            <th class="coord-dan-hdr">う段 (-u)</th>
+            <th class="coord-dan-hdr">え段 (-e)</th>
+            <th class="coord-dan-hdr">お段 (-o)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="coord-row-hdr">あ行 (母音)</td>
+            <td>あ (a)</td><td>い (i)</td><td>う (u)</td><td>え (e)</td><td>お (o)</td>
+          </tr>
+          <tr>
+            <td class="coord-row-hdr">か行 (k-)</td>
+            <td>か (ka)</td><td>き (ki)</td><td>く (ku)</td><td>け (ke)</td><td>こ (ko)</td>
+          </tr>
+          <tr>
+            <td class="coord-row-hdr">さ行 (s-)</td>
+            <td>さ (sa)</td><td>し (shi)</td><td>す (su)</td><td>せ (se)</td><td>そ (so)</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip-callout" style="border-left-color:var(--secondary); background:#f0f9ff; color:#0369a1;">
+        <strong>⚡ 為什麼一定要記「行」與「段」？</strong><br>
+        日後學到文法<strong>「動詞變化（五段活用）」</strong>時，全部規則都是「詞尾在段之間變換」（例如：書く 的詞尾 く，在あ段是 か(書かない)、在い段是 き(書きます)、在え段是 け(書けば)）。記住行與段，未來的文法直接通關！
       </div>
     </div>
-    <div class="guide-step">
-      <div class="step-num">3</div>
-      <div class="step-content">
-        <strong>每天10-15分鐘</strong>
-        <p>不要貪多，每天固定時間練習。睡前複習當天學的最有效！</p>
+
+    <!-- 3. 十行子音速記口訣 -->
+    <div class="guide-box">
+      <div class="guide-box-header">
+        <div class="guide-box-title">
+          <span>🗣️ 10 行子音速記口訣（點擊聽整行發音）</span>
+        </div>
+        <span class="guide-tag-pill">記憶口訣</span>
       </div>
+      <p style="font-size:0.8rem; color:var(--text); line-height:1.5; margin-bottom:6px;">
+        熟記這句 10 字真言，十行的順序立刻刻進腦海：<br>
+        <span style="font-size:0.95rem; font-weight:800; color:var(--primary); display:block; margin:6px 0; background:#fff0f2; padding:6px 10px; border-radius:8px; text-align:center;">
+          「阿 卡 撒 他 納，哈 媽 壓 拉 哇」
+        </span>
+      </p>
+      <div class="guide-mnemonic-grid">
+        <div class="mnemonic-item" onclick="playRowMnemonic(0)" title="點擊聽發音">
+          <div><span class="mnemonic-code">A</span> <span class="mnemonic-zh">阿 (あ行)</span></div>
+          <span class="mnemonic-chars">あいうえお 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(1)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Ka</span> <span class="mnemonic-zh">卡 (か行)</span></div>
+          <span class="mnemonic-chars">かきくけこ 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(2)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Sa</span> <span class="mnemonic-zh">撒 (さ行)</span></div>
+          <span class="mnemonic-chars">さしすせそ 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(3)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Ta</span> <span class="mnemonic-zh">他 (た行)</span></div>
+          <span class="mnemonic-chars">たちつてと 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(4)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Na</span> <span class="mnemonic-zh">納 (な行)</span></div>
+          <span class="mnemonic-chars">なにぬねの 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(5)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Ha</span> <span class="mnemonic-zh">哈 (は行)</span></div>
+          <span class="mnemonic-chars">はひふへほ 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(6)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Ma</span> <span class="mnemonic-zh">媽 (ま行)</span></div>
+          <span class="mnemonic-chars">まみむめも 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(7)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Ya</span> <span class="mnemonic-zh">壓 (や行)</span></div>
+          <span class="mnemonic-chars">や ゆ よ 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(8)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Ra</span> <span class="mnemonic-zh">拉 (ら行)</span></div>
+          <span class="mnemonic-chars">らりるれろ 🔊</span>
+        </div>
+        <div class="mnemonic-item" onclick="playRowMnemonic(9)" title="點擊聽發音">
+          <div><span class="mnemonic-code">Wa</span> <span class="mnemonic-zh">哇 (わ行)</span></div>
+          <span class="mnemonic-chars">わ を ん 🔊</span>
+        </div>
+      </div>
+      <p style="font-size:0.72rem; color:var(--text-muted); text-align:center;">💡 點擊上方任一行即可直接試聽整行發音</p>
     </div>
-    <div class="guide-step">
-      <div class="step-num">4</div>
-      <div class="step-content">
-        <strong>用聽覺輔助記憶</strong>
-        <p>點擊每個字可以聽發音。嘴巴跟著念，手寫練習，多感官學習效果更好。</p>
+
+    <!-- 4. 黃金學習 3 階段 -->
+    <div class="guide-box">
+      <div class="guide-box-header">
+        <div class="guide-box-title">
+          <span>🏆 初學者黃金 3 階段學習法</span>
+        </div>
+        <span class="guide-tag-pill">節奏建議</span>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>第一階段：先攻克「平假名」（約 1~2 週）</strong>
+          <p>平假名是日文標音、助詞與基礎單字的命脈。先掌握「あ～ん」46 個平假名，不用急著背片假名。</p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>第二階段：搭配「生活高頻單字」同步記憶</strong>
+          <p>不要乾背單個字！把假名套進實用單字（如「ありがとう」、「こんにちは」、「すし」），大腦印象深刻 10 倍！</p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>第三階段：片假名「對照記憶」</strong>
+          <p>片假名主要出現在外來語（如「コーヒー / coffee」、「バス / bus」）。利用本 App 的對照模式和閃卡一對一聯想，輕鬆通關！</p>
+        </div>
       </div>
     </div>
   </div>
@@ -1242,6 +1508,10 @@
       </select>
     </div>
   </div>
+
+  <button class="guide-trigger-btn" onclick="openGuideModal()">
+    <span>💡</span> 五十音記憶口訣與概念秘笈（初學必看）
+  </button>
 
   <div class="table-view-toggle">
     <button class="tv-btn active" id="tvModeCarousel" onclick="switchTableView('carousel')">🎴 分行滑動卡片</button>
@@ -1519,6 +1789,141 @@
       <button class="modal-btn speak" onclick="speakModal()">🔊 聽發音</button>
       <button class="modal-btn learn" id="modalLearnBtn" onclick="toggleLearnModal()">✅ 標記已學</button>
       <button class="modal-btn close" onclick="closeModalDirect()">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEMORY GUIDE & TIPS MODAL -->
+<div class="modal-overlay" id="guideModal" onclick="closeGuideModal(event)">
+  <div class="modal" style="max-height:85vh; display:flex; flex-direction:column; padding-bottom:calc(20px + env(safe-area-inset-bottom));">
+    <div class="modal-handle"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:6px;">
+        <span>💡</span> 五十音記憶秘笈與常見迷思
+      </h3>
+      <button onclick="closeGuideModalDirect()" style="background:#f1f5f9; border:none; border-radius:50%; width:28px; height:28px; font-size:1rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    </div>
+    <div class="guide-modal-body" id="guideModalBody">
+      <!-- 1. 迷思破解 -->
+      <div class="guide-box highlight">
+        <div class="guide-box-header">
+          <div class="guide-box-title">
+            <span>❓ 迷思：需要背 1~50 號編號嗎？</span>
+          </div>
+          <span class="guide-tag-pill" style="background:#fee2e2; color:#b91c1c;">千萬不要死背號碼</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text); line-height:1.6; margin-bottom:8px;">
+          <strong>完全不用！</strong> 日本人生活與檢定考試中<strong>從來沒有「第幾號假名」的概念</strong>。字卡上的「1/46」純粹是自我學習進度條，不是字號！
+        </p>
+        <div class="tip-callout">
+          <strong>為什麼叫五十音卻只有 46 個字？</strong><br>
+          5 個母音 × 10 行子音本來是 50 格，但歷史演變中「や行」缺少 yi、ye，現代「わ行」廢除了 wu、wi(ゐ)、we(ゑ)，加上 1 個撥音「ん」，實際只有 <strong>46 個基礎假名</strong>。如果硬背 1~50 號會有很多空號，反而混淆！
+        </div>
+      </div>
+
+      <!-- 2. 九九乘法表坐標法 -->
+      <div class="guide-box">
+        <div class="guide-box-header">
+          <div class="guide-box-title">
+            <span>🧠 核心法寶：「行 × 段」二維坐標法</span>
+          </div>
+          <span class="guide-tag-pill">日語思維</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text); line-height:1.6; margin-bottom:8px;">
+          日本人定位假名就像查九九乘法表，看的是<strong>「行」與「段」</strong>的交叉點：
+        </p>
+        <table class="coord-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="coord-dan-hdr">あ段 (-a)</th>
+              <th class="coord-dan-hdr">い段 (-i)</th>
+              <th class="coord-dan-hdr">う段 (-u)</th>
+              <th class="coord-dan-hdr">え段 (-e)</th>
+              <th class="coord-dan-hdr">お段 (-o)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="coord-row-hdr">あ行 (母音)</td>
+              <td>あ (a)</td><td>い (i)</td><td>う (u)</td><td>え (e)</td><td>お (o)</td>
+            </tr>
+            <tr>
+              <td class="coord-row-hdr">か行 (k-)</td>
+              <td>か (ka)</td><td>き (ki)</td><td>く (ku)</td><td>け (ke)</td><td>こ (ko)</td>
+            </tr>
+            <tr>
+              <td class="coord-row-hdr">さ行 (s-)</td>
+              <td>さ (sa)</td><td>し (shi)</td><td>す (su)</td><td>せ (se)</td><td>そ (so)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tip-callout" style="border-left-color:var(--secondary); background:#f0f9ff; color:#0369a1;">
+          <strong>⚡ 為什麼一定要記「行」與「段」？</strong><br>
+          日後學到文法<strong>「動詞變化（五段活用）」</strong>時，全部規則都是「詞尾在段之間變換」（例如：書く 的詞尾 く，在あ段是 か(書かない)、在い段是 き(書きます)、在え段是 け(書けば)）。記住行與段，未來的文法直接通關！
+        </div>
+      </div>
+
+      <!-- 3. 十行速記口訣 -->
+      <div class="guide-box">
+        <div class="guide-box-header">
+          <div class="guide-box-title">
+            <span>🗣️ 10 行子音速記口訣（點擊聽發音）</span>
+          </div>
+          <span class="guide-tag-pill">記憶口訣</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text); line-height:1.5; margin-bottom:6px;">
+          熟記這句 10 字真言，十行的順序立刻刻進腦海：<br>
+          <span style="font-size:0.95rem; font-weight:800; color:var(--primary); display:block; margin:6px 0; background:#fff0f2; padding:6px 10px; border-radius:8px; text-align:center;">
+            「阿 卡 撒 他 納，哈 媽 壓 拉 哇」
+          </span>
+        </p>
+        <div class="guide-mnemonic-grid">
+          <div class="mnemonic-item" onclick="playRowMnemonic(0)" title="點擊聽發音">
+            <div><span class="mnemonic-code">A</span> <span class="mnemonic-zh">阿 (あ行)</span></div>
+            <span class="mnemonic-chars">あいうえお 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(1)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Ka</span> <span class="mnemonic-zh">卡 (か行)</span></div>
+            <span class="mnemonic-chars">かきくけこ 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(2)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Sa</span> <span class="mnemonic-zh">撒 (さ行)</span></div>
+            <span class="mnemonic-chars">さしすせそ 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(3)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Ta</span> <span class="mnemonic-zh">他 (た行)</span></div>
+            <span class="mnemonic-chars">たちつてと 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(4)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Na</span> <span class="mnemonic-zh">納 (な行)</span></div>
+            <span class="mnemonic-chars">なにぬねの 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(5)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Ha</span> <span class="mnemonic-zh">哈 (は行)</span></div>
+            <span class="mnemonic-chars">はひふへほ 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(6)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Ma</span> <span class="mnemonic-zh">媽 (ま行)</span></div>
+            <span class="mnemonic-chars">まみむめも 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(7)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Ya</span> <span class="mnemonic-zh">壓 (や行)</span></div>
+            <span class="mnemonic-chars">や ゆ よ 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(8)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Ra</span> <span class="mnemonic-zh">拉 (ら行)</span></div>
+            <span class="mnemonic-chars">らりるれろ 🔊</span>
+          </div>
+          <div class="mnemonic-item" onclick="playRowMnemonic(9)" title="點擊聽發音">
+            <div><span class="mnemonic-code">Wa</span> <span class="mnemonic-zh">哇 (わ行)</span></div>
+            <span class="mnemonic-chars">わ を ん 🔊</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <button class="modal-btn close" style="width:100%; padding:12px;" onclick="closeGuideModalDirect()">關閉秘笈</button>
     </div>
   </div>
 </div>
@@ -2511,6 +2916,36 @@ function closeModalDirect() {
   document.getElementById('kanaModal').classList.remove('open');
   clearStrokeAnimation();
   if (isPracticeActive) togglePracticeMode();
+}
+
+// ============================================================
+//  MEMORY GUIDE MODAL & MNEMONIC AUDIO
+// ============================================================
+function openGuideModal() {
+  const modal = document.getElementById('guideModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeGuideModal(e) {
+  if (e && e.target === document.getElementById('guideModal')) {
+    closeGuideModalDirect();
+  }
+}
+
+function closeGuideModalDirect() {
+  const modal = document.getElementById('guideModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function playRowMnemonic(rowIdx) {
+  if (rowIdx < 0 || rowIdx >= KANA_DATA.rows.length) return;
+  const row = KANA_DATA.rows[rowIdx];
+  const validChars = row.chars.filter(c => !c.empty && c.roma);
+  validChars.forEach((ch, idx) => {
+    setTimeout(() => {
+      playKana(ch.roma, ch.hira);
+    }, idx * 600);
+  });
 }
 
 function toggleLearnModal() {

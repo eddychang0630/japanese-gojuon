@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jp50on-v3.1';
+const CACHE_NAME = 'jp50on-v3.2';
 const ASSETS = [
   './',
   './index.html',
