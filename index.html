@@ -272,8 +272,64 @@
       opacity: 0;
       transition: opacity 0.2s;
     }
-    .kana-cell:hover .play-icon { opacity: 1; }
+    .kana-cell.reading-now {
+      border-color: var(--primary) !important;
+      background: #ffe3e5 !important;
+      transform: scale(1.1) !important;
+      box-shadow: 0 0 18px rgba(230, 57, 70, 0.5) !important;
+      z-index: 5;
+    }
     .kana-cell.empty { background: transparent; box-shadow: none; cursor: default; }
+
+    /* ===== AUTOPLAY BAR ===== */
+    .autoplay-bar {
+      background: linear-gradient(135deg, #1d3557, #457b9d);
+      color: white;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(29, 53, 87, 0.2);
+    }
+    .ap-info { flex: 1; min-width: 140px; }
+    .ap-title { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .ap-current { font-size: 0.75rem; opacity: 0.88; margin-top: 2px; }
+    .ap-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ap-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ap-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+    .ap-btn.primary:active { transform: scale(0.95); }
+    .ap-btn:not(.primary) {
+      background: rgba(255,255,255,0.22);
+      color: white;
+    }
+    .ap-select {
+      background: rgba(255,255,255,0.18);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      outline: none;
+    }
+    .ap-select option {
+      background: #1d3557;
+      color: white;
+    }
 
     /* ===== DETAIL MODAL ===== */
     .modal-overlay {
@@ -867,6 +923,22 @@
 
 <!-- 50-ON TABLE PAGE -->
 <div class="page" id="page-table">
+  <div class="autoplay-bar">
+    <div class="ap-info">
+      <div class="ap-title">🎧 全五十音循序朗讀</div>
+      <div class="ap-current" id="apCurrentLabel">從「あ」開始自動連播到「ん」</div>
+    </div>
+    <div class="ap-controls">
+      <button class="ap-btn primary" id="apPlayBtn" onclick="toggleAutoPlay()">▶ 全部連播</button>
+      <button class="ap-btn" id="apStopBtn" onclick="stopAutoPlay()" style="display:none;">⏹ 停止</button>
+      <select id="apSpeed" class="ap-select" onchange="changeAutoSpeed()">
+        <option value="1200">較快 (1.2s)</option>
+        <option value="1700" selected>標準 (1.7s)</option>
+        <option value="2300">慢速 (2.3s)</option>
+      </select>
+    </div>
+  </div>
+
   <div class="type-toggle">
     <button class="type-btn active" onclick="switchType('hiragana', this)">平假名 ひらがな</button>
     <button class="type-btn" onclick="switchType('katakana', this)">片假名 カタカナ</button>
@@ -1298,6 +1370,9 @@ function checkStreak() {
 //  NAVIGATION
 // ============================================================
 function goPage(id, btnEl) {
+  if (id !== 'page-table' && isAutoPlaying) {
+    pauseAutoPlay();
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1320,9 +1395,112 @@ function goToFlash() {
 }
 
 // ============================================================
-//  KANA TABLE
+//  KANA TABLE & SEQUENTIAL AUTOPLAY
 // ============================================================
 let currentType = 'hiragana';
+let isAutoPlaying = false;
+let autoIndex = 0;
+let autoTimer = null;
+let autoList = [];
+
+function getSequentialList() {
+  const list = [];
+  KANA_DATA.rows.forEach(r => {
+    r.chars.forEach(c => {
+      if (!c.empty && c.roma) list.push(c);
+    });
+  });
+  return list;
+}
+
+function toggleAutoPlay() {
+  if (isAutoPlaying) {
+    pauseAutoPlay();
+  } else {
+    startAutoPlay();
+  }
+}
+
+function startAutoPlay() {
+  autoList = getSequentialList();
+  if (autoList.length === 0) return;
+  isAutoPlaying = true;
+  const playBtn = document.getElementById('apPlayBtn');
+  const stopBtn = document.getElementById('apStopBtn');
+  if (playBtn) {
+    playBtn.textContent = '⏸ 暫停';
+    playBtn.classList.remove('primary');
+  }
+  if (stopBtn) stopBtn.style.display = 'inline-block';
+  playNextAuto();
+}
+
+function pauseAutoPlay() {
+  isAutoPlaying = false;
+  if (autoTimer) clearTimeout(autoTimer);
+  const playBtn = document.getElementById('apPlayBtn');
+  if (playBtn) {
+    playBtn.textContent = '▶ 繼續朗讀';
+    playBtn.classList.add('primary');
+  }
+  const label = document.getElementById('apCurrentLabel');
+  if (label) label.textContent = '已暫停朗讀（點擊繼續）';
+}
+
+function stopAutoPlay() {
+  isAutoPlaying = false;
+  if (autoTimer) clearTimeout(autoTimer);
+  autoIndex = 0;
+  document.querySelectorAll('.kana-cell.reading-now').forEach(c => c.classList.remove('reading-now'));
+  const playBtn = document.getElementById('apPlayBtn');
+  const stopBtn = document.getElementById('apStopBtn');
+  if (playBtn) {
+    playBtn.textContent = '▶ 全部連播';
+    playBtn.classList.add('primary');
+  }
+  if (stopBtn) stopBtn.style.display = 'none';
+  const label = document.getElementById('apCurrentLabel');
+  if (label) label.textContent = '從「あ」開始自動連播到「ん」';
+}
+
+function playNextAuto() {
+  if (!isAutoPlaying) return;
+
+  if (autoIndex >= autoList.length) {
+    // Finished reading all 46!
+    stopAutoPlay();
+    showToast('🎉 五十音全表朗讀完畢！');
+    confetti(25);
+    return;
+  }
+
+  const ch = autoList[autoIndex];
+  const charDisplay = currentType === 'katakana' ? ch.kata : ch.hira;
+  const label = document.getElementById('apCurrentLabel');
+  if (label) {
+    label.textContent = `正在朗讀: ${charDisplay} (${ch.roma}) [${autoIndex + 1}/${autoList.length}]`;
+  }
+
+  // Highlight cell
+  document.querySelectorAll('.kana-cell.reading-now').forEach(c => c.classList.remove('reading-now'));
+  const cell = document.getElementById(`cell-${ch.roma}`);
+  if (cell) {
+    cell.classList.add('reading-now');
+    cell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Play audio
+  playKana(ch.roma, ch.hira);
+
+  const speedSelect = document.getElementById('apSpeed');
+  const delay = speedSelect ? (parseInt(speedSelect.value, 10) || 1700) : 1700;
+  autoIndex++;
+  autoTimer = setTimeout(playNextAuto, delay);
+}
+
+function changeAutoSpeed() {
+  // Speed is read dynamically in each step
+}
 
 function switchType(type, btn) {
   currentType = type;
@@ -1350,6 +1528,7 @@ function renderTable() {
         const keyK = `kata-${ch.kata}`;
         const isLearned = state.learned[key] || state.learned[keyK];
         cell.className = `kana-cell${isLearned ? ' learned' : ''}`;
+        cell.id = `cell-${ch.roma}`;
         cell.onclick = () => openModal(ch);
 
         let content = '';
